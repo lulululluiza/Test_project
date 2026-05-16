@@ -1,6 +1,6 @@
 # Test Cases
 #### Authentification
-##### User Login
+#### User Login
 **Test Case:** Login with the correct credentials (standard_user)<br>
 **Description:** Verify if after inserting valid credentials, the user can log in<br>
 **Prerequisites:** User has an valid account and is in the login page<br>
@@ -87,7 +87,7 @@
 **Actual Results:** The expected one<br>
 **Status:** Pass<br>
 
-##### Products Management
+#### Products Management
 **Test Case:** Products are sorted from A to Z<br>
 **Description:** Verify if after selecting "Name (A to Z)", the products are sorted from A to Z<br>
 **Prerequisites:** User has an account and it's logged<br>
@@ -120,7 +120,7 @@
 **Actual Results:** The expected one<br>
 **Status:** Pass<br>
 
-##### Checkout process
+#### Checkout process
 **Test Case:** Simple checkout scenario<br>
 **Description:** Verify if after filling the checkout form and confirming the informations, the checkout is completed sucessfully<br>
 **Prerequisites:** User has an account, has itens in cart and has clicked Checkout<br>
@@ -145,7 +145,7 @@
 **Actual Results:** The expected one<br>
 **Status:** Pass<br>
 
-##### Cart management
+#### Cart management
 **Test Case:** Removing the only product in cart<br>
 **Description:** Verify if after removing the only product in cart, the cart is empty<br>
 **Prerequisites:** User has an account, it's logged and have a single item in cart<br>
@@ -162,7 +162,7 @@
 **Actual Results:** The expected one<br>
 **Status:** Pass<br>
 
-##### Site navigation
+#### Site navigation
 **Test Case:** Navigate to main page <br>
 **Description:** Verify if is possible to navigate to the main page<br>
 **Prerequisites:** User has an valid account and it's logged<br>
@@ -203,7 +203,7 @@
 **Actual Results:** The expected one<br>
 **Status:** Pass<br>
 
-##### Logout
+#### Logout
 **Test Case:** Logout <br>
 **Description:** Verify if after clicking "Logout", the user is redirected to the login page<br>
 **Prerequisites:** User has an valid account and it's logged<br>
