@@ -1047,9 +1047,3 @@ Expected Response:
 **Expected Response:** A error message and status 404 Not Found<br>
 **Actual Response:** The expected one<br>
 **Status:** Pass<br>
-
-
-
-
-#### Suggestions/Observations:
-- The documentation doesn't mentioned what is expected if there's any problem with the request, if it returns a message or a status code. I included tests validating the status codes as they showed up in the request, but that information should be in the documentation too.
