@@ -1,0 +1,573 @@
+{
+  "info": {
+    "_postman_id": "6a207d63-1597-4050-8de7-dbed6080c8b1",
+    "name": "API Tests",
+    "description": "Documentation: [https://restful-booker.herokuapp.com/apidoc/index.html](https://restful-booker.herokuapp.com/apidoc/index.html)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "13933273"
+  },
+  "item": [
+    {
+      "name": "Authentification",
+      "item": [
+        {
+          "name": "Create token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "const token = pm.response.json()\r",
+                  "\r",
+                  "pm.test(\"Return type is a object\", () => {\r",
+                  "    pm.expect(token).to.be.a('object')    \r",
+                  "    pm.expect(token).to.haveOwnProperty('token')\r",
+                  "    pm.expect(token.token).to.be.an('string')\r",
+                  "})\r",
+                  "\r",
+                  "//Save the id in the collection variables for future tests\r",
+                  "pm.collectionVariables.set('authToken', token.token)"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"username\" : \"admin\",\r\n    \"password\" : \"password123\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth"
+              ]
+            },
+            "description": "Test Case: Create token  \nEndpoint: [https://restful-booker.herokuapp.com/auth](https://restful-booker.herokuapp.com/auth)  \nMethod: POST  \nRequest Body:  \n{  \n\"username\" : \"admin\",  \n\"password\" : \"password123\"  \n}  \nExpected Response:  \n{  \n\"token\": \"TOKEN_VALUE\"  \n}  \nActual Response: The expected one  \nStatus: Pass"
+          },
+          "response": []
+        },
+        {
+          "name": "Health check",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {\r",
+                  "    pm.response.to.have.status(201);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/ping",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "ping"
+              ]
+            },
+            "description": "Test Case: Health check  \nEndpoint: [https://restful-booker.herokuapp.com/ping](https://restful-booker.herokuapp.com/ping)  \nMethod: GET  \nRequest Body: None  \nExpected Response: A 201 status  \nActual Response: The expected one  \nStatus: Pass"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Happy path",
+      "item": [
+        {
+          "name": "Get all bookings",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "const bookings = pm.response.json()\r",
+                  "\r",
+                  "pm.test(\"Return type is an array of objects\", () => {\r",
+                  "    pm.expect(bookings).to.be.an('array')    \r",
+                  "    bookings.every(val => pm.expect(val).to.be.an('object'))\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"Check if the object have the correct property and type\", () => {\r",
+                  "    pm.expect(bookings[0]).to.haveOwnProperty('bookingid')\r",
+                  "    pm.expect(bookings[0].bookingid).to.be.an('number')    \r",
+                  "})"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/booking",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "booking"
+              ]
+            },
+            "description": "Test Case: Get all bookings  \nEndpoint: [https://restful-booker.herokuapp.com/booking](https://restful-booker.herokuapp.com/booking/)  \nMethod: GET  \nRequest Body: None  \nExpected Response: Json with all booking IDs  \nActual Response: The expected one  \nStatus: Pass"
+          },
+          "response": []
+        },
+        {
+          "name": "Create booking",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "const booking = pm.response.json()\r",
+                  "                                //regex for YYYY-MM-YY\r",
+                  "const checkDateFormat = date => /^\\d{4}-\\d{2}-\\d{2}$/.test(date)\r",
+                  "\r",
+                  "pm.test(\"Return type is a object with the correct attributes and types\", () => {\r",
+                  "    pm.expect(booking).to.be.an('object')\r",
+                  "    pm.expect(booking).to.haveOwnProperty('bookingid')\r",
+                  "    pm.expect(booking).to.haveOwnProperty('booking')\r",
+                  "    pm.expect(booking.booking).to.haveOwnProperty('firstname')\r",
+                  "    pm.expect(booking.booking.firstname).to.be.an('string')\r",
+                  "    pm.expect(booking.booking).to.haveOwnProperty('lastname')\r",
+                  "    pm.expect(booking.booking.lastname).to.be.an('string')\r",
+                  "    pm.expect(booking.booking).to.haveOwnProperty('totalprice')\r",
+                  "    pm.expect(booking.booking.totalprice).to.be.an('number')\r",
+                  "    pm.expect(booking.booking).to.haveOwnProperty('depositpaid')\r",
+                  "    pm.expect(booking.booking.depositpaid).to.be.an('boolean')\r",
+                  "    pm.expect(booking.booking).to.haveOwnProperty('bookingdates')\r",
+                  "    pm.expect(booking.booking.bookingdates).to.be.an('object')\r",
+                  "\r",
+                  "    pm.expect(booking.booking.bookingdates).to.haveOwnProperty('checkin')\r",
+                  "    //pm.expect(booking.bookingdates.checkin).to.be.an('date')\r",
+                  "    pm.expect(checkDateFormat(booking.booking.bookingdates.checkin)).to.be.true\r",
+                  "    \r",
+                  "    pm.expect(booking.booking.bookingdates).to.haveOwnProperty('checkout')\r",
+                  "    //pm.expect(booking.bookingdates.checkout).to.be.an('date')\r",
+                  "    pm.expect(checkDateFormat(booking.booking.bookingdates.checkout)).to.be.true\r",
+                  "\r",
+                  "    pm.expect(booking.booking).to.haveOwnProperty('additionalneeds')\r",
+                  "    pm.expect(booking.booking.additionalneeds).to.be.an('string')\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"Return is correct according to the body sent\", () => {\r",
+                  "    pm.expect(booking.booking.firstname).to.be.equal('Luiza')\r",
+                  "    pm.expect(booking.booking.lastname).to.be.equal('Person')\r",
+                  "    pm.expect(booking.booking.totalprice).to.be.equal(50)\r",
+                  "    pm.expect(booking.booking.depositpaid).to.be.true\r",
+                  "    pm.expect(booking.booking.bookingdates.checkin).to.be.equal('2026-03-06')\r",
+                  "    pm.expect(booking.booking.bookingdates.checkout).to.be.equal('2026-05-12')\r",
+                  "    pm.expect(booking.booking.additionalneeds).to.be.equal('Water')\r",
+                  "\r",
+                  "    //Save the id in the collection variables for future tests\r",
+                  "    pm.collectionVariables.set('bookingId', booking.bookingid)\r",
+                  "})\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"firstname\" : \"Luiza\",\r\n    \"lastname\" : \"Person\",\r\n    \"totalprice\" : 50,\r\n    \"depositpaid\" : true,\r\n    \"bookingdates\" : {\r\n        \"checkin\" : \"2026-03-06\",\r\n        \"checkout\" : \"2026-05-12\"\r\n    },\r\n    \"additionalneeds\" : \"Water\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/booking",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "booking"
+              ]
+            },
+            "description": "#### Test Case: Create booking\n\n**Endpoint:** [https://restful-booker.herokuapp.com/booking](https://restful-booker.herokuapp.com/booking)\n\n**Method:** POST\n\n**Request Body:**\n\n{\n\n\"firstname\" : \"Luiza\",\n\n\"lastname\" : \"Person\",\n\n\"totalprice\" : 50,\n\n\"depositpaid\" : true,\n\n\"bookingdates\" : {\n\n\"checkin\" : \"2026-03-06\",\n\n\"checkout\" : \"2026-05-12\" },\n\n\"additionalneeds\" : \"Water\"\n\n}\n\n**Expected Response:** Json with all booking IDs\n\n**Actual Response:** The expected one\n\n**Status:** Pass"
+          },
+          "response": []
+        },
+        {
+          "name": "Get a booking by id",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "const booking = pm.response.json()\r",
+                  "                                //regex for YYYY-MM-YY\r",
+                  "const checkDateFormat = date => /^\\d{4}-\\d{2}-\\d{2}$/.test(date)\r",
+                  "\r",
+                  "pm.test(\"Return type is a object with the correct attributes and types\", () => {\r",
+                  "    pm.expect(booking).to.be.an('object')\r",
+                  "    pm.expect(booking).to.haveOwnProperty('firstname')\r",
+                  "    pm.expect(booking.firstname).to.be.an('string')\r",
+                  "    pm.expect(booking).to.haveOwnProperty('lastname')\r",
+                  "    pm.expect(booking.lastname).to.be.an('string')\r",
+                  "    pm.expect(booking).to.haveOwnProperty('totalprice')\r",
+                  "    pm.expect(booking.totalprice).to.be.an('number')\r",
+                  "    pm.expect(booking).to.haveOwnProperty('depositpaid')\r",
+                  "    pm.expect(booking.depositpaid).to.be.an('boolean')\r",
+                  "    pm.expect(booking).to.haveOwnProperty('bookingdates')\r",
+                  "    pm.expect(booking.bookingdates).to.be.an('object')\r",
+                  "    pm.expect(booking.bookingdates).to.haveOwnProperty('checkin')\r",
+                  "    //pm.expect(booking.bookingdates.checkin).to.be.an('date')\r",
+                  "    pm.expect(checkDateFormat(booking.bookingdates.checkin)).to.be.true\r",
+                  "    \r",
+                  "    pm.expect(booking.bookingdates).to.haveOwnProperty('checkout')\r",
+                  "    //pm.expect(booking.bookingdates.checkout).to.be.an('date')\r",
+                  "    pm.expect(checkDateFormat(booking.bookingdates.checkout)).to.be.true\r",
+                  "\r",
+                  "    pm.expect(booking).to.haveOwnProperty('additionalneeds')\r",
+                  "    pm.expect(booking.additionalneeds).to.be.an('string')\r",
+                  "})\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/booking/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "booking",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{bookingId}}"
+                }
+              ]
+            },
+            "description": "#### Test Case: Get a booking by id\n\n**Endpoint:** [https://restful-booker.herokuapp.com/booking/:id](https://restful-booker.herokuapp.com/booking/:id)\n\n**Method:** GET\n\n**Path Variables:** Id, {{bookingId}}\n\n**Request Body:** None\n\n**Expected Response:** Json with the matching booking by ID\n\n**Actual Response:** The expected one\n\n**Status:** Pass"
+          },
+          "response": []
+        },
+        {
+          "name": "Update booking",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "const booking = pm.response.json()\r",
+                  "\r",
+                  "                                //regex for YYYY-MM-YY\r",
+                  "const checkDateFormat = date => /^\\d{4}-\\d{2}-\\d{2}$/.test(date)\r",
+                  "\r",
+                  "pm.test(\"Return type is a object with the correct attributes and types\", () => {\r",
+                  "    pm.expect(booking).to.be.an('object')\r",
+                  "    pm.expect(booking).to.haveOwnProperty('firstname')\r",
+                  "    pm.expect(booking.firstname).to.be.an('string')\r",
+                  "    pm.expect(booking).to.haveOwnProperty('lastname')\r",
+                  "    pm.expect(booking.lastname).to.be.an('string')\r",
+                  "    pm.expect(booking).to.haveOwnProperty('totalprice')\r",
+                  "    pm.expect(booking.totalprice).to.be.an('number')\r",
+                  "    pm.expect(booking).to.haveOwnProperty('depositpaid')\r",
+                  "    pm.expect(booking.depositpaid).to.be.an('boolean')\r",
+                  "    pm.expect(booking).to.haveOwnProperty('bookingdates')\r",
+                  "    pm.expect(booking.bookingdates).to.be.an('object')\r",
+                  "    pm.expect(booking.bookingdates).to.haveOwnProperty('checkin')\r",
+                  "    //pm.expect(booking.bookingdates.checkin).to.be.an('date')\r",
+                  "    pm.expect(checkDateFormat(booking.bookingdates.checkin)).to.be.true\r",
+                  "    \r",
+                  "    pm.expect(booking.bookingdates).to.haveOwnProperty('checkout')\r",
+                  "    //pm.expect(booking.bookingdates.checkout).to.be.an('date')\r",
+                  "    pm.expect(checkDateFormat(booking.bookingdates.checkout)).to.be.true\r",
+                  "    pm.expect(booking).to.haveOwnProperty('additionalneeds')\r",
+                  "    pm.expect(booking.additionalneeds).to.be.an('string')\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"Return is correct according to the body sent\", () => {\r",
+                  "    pm.expect(booking.firstname).to.be.equal('Luiza')\r",
+                  "    pm.expect(booking.lastname).to.be.equal('Person')\r",
+                  "    pm.expect(booking.totalprice).to.be.equal(50)\r",
+                  "    pm.expect(booking.depositpaid).to.be.true\r",
+                  "    pm.expect(booking.bookingdates.checkin).to.be.equal('2026-03-06')\r",
+                  "    pm.expect(booking.bookingdates.checkout).to.be.equal('2026-05-12')\r",
+                  "    pm.expect(booking.additionalneeds).to.be.equal('Dinner')\r",
+                  "})"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Cookie",
+                "value": "token={{authToken}}"
+              },
+              {
+                "key": "Authorization",
+                "value": "Basic",
+                "type": "text",
+                "disabled": true
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"firstname\" : \"Luiza\",\r\n    \"lastname\" : \"Person\",\r\n    \"totalprice\" : 50,\r\n    \"depositpaid\" : true,\r\n    \"bookingdates\" : {\r\n        \"checkin\" : \"2026-03-06\",\r\n        \"checkout\" : \"2026-05-12\"\r\n    },\r\n    \"additionalneeds\" : \"Dinner\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/booking/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "booking",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{bookingId}}"
+                }
+              ]
+            },
+            "description": "Test Case: Update booking  \nEndpoint: [https://restful-booker.herokuapp.com/booking/:id](https://restful-booker.herokuapp.com/booking/:id)  \nMethod: PUT  \nHeader: Cookie, token={{authToken}}  \nPath Variables: Id, {{bookingId}}  \nRequest Body:  \n{  \n\"firstname\" : \"Luiza\",  \n\"lastname\" : \"Person\",  \n\"totalprice\" : 50,  \n\"depositpaid\" : true,  \n\"bookingdates\" : {  \n\"checkin\" : \"2026-03-06\",  \n\"checkout\" : \"2026-05-12\"  \n},  \n\"additionalneeds\" : \"Dinner\"  \n}  \nExpected Response: Same value as the body  \nActual Response: The expected one  \nStatus: Pass"
+          },
+          "response": []
+        },
+        {
+          "name": "Partial update booking",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "const booking = pm.response.json()\r",
+                  "\r",
+                  "                                //regex for YYYY-MM-YY\r",
+                  "const checkDateFormat = date => /^\\d{4}-\\d{2}-\\d{2}$/.test(date)\r",
+                  "\r",
+                  "pm.test(\"Return type is a object with the correct attributes and types\", () => {\r",
+                  "    pm.expect(booking).to.be.an('object')\r",
+                  "    pm.expect(booking).to.haveOwnProperty('firstname')\r",
+                  "    pm.expect(booking.firstname).to.be.an('string')\r",
+                  "    pm.expect(booking).to.haveOwnProperty('lastname')\r",
+                  "    pm.expect(booking.lastname).to.be.an('string')\r",
+                  "    pm.expect(booking).to.haveOwnProperty('totalprice')\r",
+                  "    pm.expect(booking.totalprice).to.be.an('number')\r",
+                  "    pm.expect(booking).to.haveOwnProperty('depositpaid')\r",
+                  "    pm.expect(booking.depositpaid).to.be.an('boolean')\r",
+                  "    pm.expect(booking).to.haveOwnProperty('bookingdates')\r",
+                  "    pm.expect(booking.bookingdates).to.be.an('object')\r",
+                  "    pm.expect(booking.bookingdates).to.haveOwnProperty('checkin')\r",
+                  "    //pm.expect(booking.bookingdates.checkin).to.be.an('date')\r",
+                  "    pm.expect(checkDateFormat(booking.bookingdates.checkin)).to.be.true\r",
+                  "    \r",
+                  "    pm.expect(booking.bookingdates).to.haveOwnProperty('checkout')\r",
+                  "    //pm.expect(booking.bookingdates.checkout).to.be.an('date')\r",
+                  "    pm.expect(checkDateFormat(booking.bookingdates.checkout)).to.be.true\r",
+                  "    pm.expect(booking).to.haveOwnProperty('additionalneeds')\r",
+                  "    pm.expect(booking.additionalneeds).to.be.an('string')\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"Return is correct according to the body sent\", () => {\r",
+                  "    pm.expect(booking.firstname).to.be.equal('Luizas')\r",
+                  "    pm.expect(booking.lastname).to.be.equal('Luizason')\r",
+                  "    pm.expect(booking.totalprice).to.be.equal(50)\r",
+                  "    pm.expect(booking.depositpaid).to.be.true\r",
+                  "    pm.expect(booking.bookingdates.checkin).to.be.equal('2026-03-06')\r",
+                  "    pm.expect(booking.bookingdates.checkout).to.be.equal('2026-05-12')\r",
+                  "    pm.expect(booking.additionalneeds).to.be.equal('Dinner')\r",
+                  "})"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Cookie",
+                "value": "token={{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"firstname\": \"Luizas\",\r\n    \"lastname\": \"Luizason\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/booking/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "booking",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{bookingId}}"
+                }
+              ]
+            },
+            "description": "Test Case: Partial update booking  \nEndpoint: [https://restful-booker.herokuapp.com/booking/:id](https://restful-booker.herokuapp.com/booking/:id)  \nMethod: PATCH  \nHeader: Cookie, token={{authToken}}  \nPath Variables: Id, {{bookingId}}  \nRequest Body:  \n{  \n\"firstname\": \"Luizas\",  \n\"lastname\": \"Luizason\"  \n}  \nExpected Response:  \n{  \n\"firstname\": \"Luizas\",  \n\"lastname\": \"Luizason\",  \n\"totalprice\": 50,  \n\"depositpaid\": true,  \n\"bookingdates\": {  \n\"checkin\": \"2026-03-06\",  \n\"checkout\": \"2026-05-12\"  \n},  \n\"additionalneeds\": \"Dinner\"  \n}  \nActual Response: The expected one  \nStatus: Pass"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete booking",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {\r",
+                  "    pm.response.to.have.status(201);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Cookie",
+                "value": "token={{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/booking/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "booking",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{bookingId}}"
+                }
+              ]
+            },
+            "description": "Test Case: Delete booking  \nEndpoint: [https://restful-booker.herokuapp.com/booking/:id](https://restful-booker.herokuapp.com/booking/:id)  \nMethod: DELETE  \nHeader: Cookie, token={{authToken}}  \nPath Variables: Id, {{bookingId}}  \nRequest Body: None  \nExpected Response: 201 status  \nActual Response: The expected one  \nStatus: Pass"
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": ""
+    },
+    {
+      "key": "authToken",
+      "value": ""
+    },
+    {
+      "key": "bookingId",
+      "value": ""
+    }
+  ]
+}
