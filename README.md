@@ -3,7 +3,7 @@ This project contains UI tests and API tests of these playgrounds (shoutout for 
 - **E-commerce platform:** [Sauce Demo](https://www.saucedemo.com)
 - **Hotel booking API:** [Restful-Booker](https://restful-booker.herokuapp.com/apidoc/index.html)
 
-There's still a lot of test cases to cover so I'll keep updating then for practice.
+There's still a lot of test cases to cover so I'll keep updating then for practice and to siplay my habilities in QA automation.
 
 ###### Technologies used:
 - Javascript
